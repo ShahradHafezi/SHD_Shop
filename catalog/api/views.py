@@ -1,5 +1,6 @@
 from rest_framework import generics
 from catalog.models import Category, Product
+from .filters import ProductFilter
 from .permissions import StaffWriteOtherwiseReadOnly
 from .serializers import CategorySerializer, ProductDetailSerializer, ProductListSerializer
 
@@ -11,6 +12,10 @@ class CategoryListView(generics.ListAPIView):
 
 class ProductListCreateView(generics.ListCreateAPIView):
     permission_classes = (StaffWriteOtherwiseReadOnly,)
+    filterset_class = ProductFilter
+    search_fields = ("name", "description")
+    ordering_fields = ("name", "unit_price", "inventory", "created_at")
+    ordering = ("-created_at",)
 
     def get_serializer_class(self):
         return ProductDetailSerializer if self.request.method == "POST" else ProductListSerializer
