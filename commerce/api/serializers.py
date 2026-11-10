@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from catalog.models import Product
-from commerce.models import Basket, BasketItem
+from commerce.models import Basket, BasketItem, Order, OrderLine
 
 
 class BasketItemSerializer(serializers.ModelSerializer):
@@ -41,4 +41,20 @@ class BasketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Basket
         fields = ("id", "items", "total", "updated_at")
+
+
+class OrderLineSerializer(serializers.ModelSerializer):
+    subtotal = serializers.DecimalField(max_digits=14, decimal_places=0, read_only=True)
+
+    class Meta:
+        model = OrderLine
+        fields = ("id", "product", "product_name", "unit_price", "quantity", "subtotal")
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    lines = OrderLineSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ("id", "status", "total_amount", "lines", "created_at", "updated_at")
 
