@@ -55,3 +55,18 @@ class OrderLine(models.Model):
     def subtotal(self):
         return self.unit_price * self.quantity
 
+
+class Payment(models.Model):
+    class Status(models.TextChoices):
+        REQUESTED = "requested", "Requested"
+        VERIFIED = "verified", "Verified"
+        FAILED = "failed", "Failed"
+
+    order = models.ForeignKey(Order, related_name="payments", on_delete=models.PROTECT)
+    authority = models.CharField(max_length=64, unique=True)
+    amount_rial = models.PositiveBigIntegerField()
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.REQUESTED)
+    reference_id = models.CharField(max_length=80, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    verified_at = models.DateTimeField(blank=True, null=True)
+
